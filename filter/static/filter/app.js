@@ -3,20 +3,24 @@
 
   const INCLUDE_KEYS = [
     'genre_incl', 'title_incl', 'office_incl', 'siglum_incl', 'feast_incl',
-    'century_incl', 'db_incl', 'num_century_incl', 'provenance_incl', 'cursus_incl'
+    'century_incl', 'db_incl', 'num_century_incl', 'provenance_incl', 'cursus_incl',
+    'order_incl', 'not_before_incl', 'not_after_incl', 'type_incl'
   ];
   const EXCLUDE_KEYS = [
     'genre_excl', 'title_excl', 'office_excl', 'siglum_excl', 'feast_excl',
-    'century_excl', 'db_excl', 'num_century_excl', 'provenance_excl', 'cursus_excl'
+    'century_excl', 'db_excl', 'num_century_excl', 'provenance_excl', 'cursus_excl',
+    'order_excl', 'not_before_excl', 'not_after_excl', 'type_excl'
   ];
 
   const TRANSLATE_KEY = {
     genre_incl: 'genre', office_incl: 'office', feast_incl: 'feast', db_incl: 'db',
     siglum_incl: 'siglum', title_incl: 'title', provenance_incl: 'provenance',
     century_incl: 'century', num_century_incl: 'num_century', cursus_incl: 'cursus',
+    order_incl: 'order', not_before_incl: 'not_before', not_after_incl: 'not_after', type_incl: 'type',
     genre_excl: 'genre', office_excl: 'office', feast_excl: 'feast', db_excl: 'db',
     siglum_excl: 'siglum', title_excl: 'title', provenance_excl: 'provenance',
-    century_excl: 'century', num_century_excl: 'num_century', cursus_excl: 'cursus'
+    century_excl: 'century', num_century_excl: 'num_century', cursus_excl: 'cursus',
+    order_excl: 'order', not_before_excl: 'not_before', not_after_excl: 'not_after', type_excl: 'type'
   };
 
   const FIELD_SPECS = [
@@ -29,7 +33,11 @@
     { id: 'db', label: 'Source Database', source: 'db', column: 'shortcut', helpId: 'db' },
     { id: 'num_century', label: 'Numerical Century', source: 'sources', column: 'num_century', helpId: 'num_century' },
     { id: 'provenance', label: 'Provenance', source: 'sources', column: 'provenance', helpId: 'provenance' },
-    { id: 'cursus', label: 'Cursus', source: 'sources', column: 'cursus', helpId: 'cursus' }
+    { id: 'cursus', label: 'Cursus', source: 'sources', column: 'cursus', helpId: 'cursus' },
+    { id: 'order', label: 'Order', source: 'sources', column: 'order', helpId: 'order' },
+    { id: 'not_before', label: 'Not before', source: 'sources', column: 'not_before', helpId: 'not_before' },
+    { id: 'not_after', label: 'Not after', source: 'sources', column: 'not_after', helpId: 'not_after' },
+    { id: 'type', label: 'Type', source: 'sources', column: 'type', helpId: 'type' },
   ];
 
   function getStaticBaseUrl() {
