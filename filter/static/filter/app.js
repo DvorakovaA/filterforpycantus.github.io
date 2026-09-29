@@ -39,6 +39,7 @@
     { id: 'not_after', label: 'Not after', source: 'sources', column: 'not_after', helpId: 'not_after' },
     { id: 'type', label: 'Type', source: 'sources', column: 'type', helpId: 'type' },
   ];
+  const INTEGER_ONLY_FIELDS = new Set(['num_century', 'not_before', 'not_after']);
 
   function getStaticBaseUrl() {
     const scripts = document.querySelectorAll('script[src]');
@@ -130,48 +131,71 @@
     return option;
   }
 
-  function createRepeatableField(container, key, options) {
+  function createRepeatableField(container, key, options, fieldId) {
     let index = 0;
+    const isIntegerOnlyField = INTEGER_ONLY_FIELDS.has(fieldId);
 
     function addRow() {
       const row = document.createElement('div');
       row.className = 'mb-2';
 
-      const select = document.createElement('select');
-      select.className = 'form-control';
-      select.name = `${key}_${index}`;
-      select.id = `id_${key}_${index}`;
-      select.appendChild(createOption('', '-- Select --'));
-      options.forEach((value) => {
-        select.appendChild(createOption(value, value));
-      });
-      select.appendChild(createOption('other', 'Other'));
-
-      const customInput = document.createElement('input');
-      customInput.type = 'text';
-      customInput.name = `${key}_other_${index}`;
-      customInput.id = `id_${key}_other_${index}`;
-      customInput.className = 'form-control mt-2';
-      customInput.placeholder = 'Enter custom...';
-      customInput.style.display = 'none';
-
       const currentIndex = index;
-      select.addEventListener('change', function () {
-        if (select.value === 'other') {
-          customInput.style.display = 'block';
-        } else {
-          customInput.style.display = 'none';
-        }
 
-        const hasNext = container.querySelector(`select[name="${key}_${currentIndex + 1}"]`);
-        if (!hasNext && select.value) {
-          index += 1;
-          addRow();
-        }
-      });
+      if (isIntegerOnlyField) {
+        const integerInput = document.createElement('input');
+        integerInput.type = 'number';
+        integerInput.step = '1';
+        integerInput.name = `${key}_${index}`;
+        integerInput.id = `id_${key}_${index}`;
+        integerInput.className = 'form-control';
+        integerInput.placeholder = 'Enter integer...';
 
-      row.appendChild(select);
-      row.appendChild(customInput);
+        integerInput.addEventListener('input', function () {
+          const hasNext = container.querySelector(`[name="${key}_${currentIndex + 1}"]`);
+          if (!hasNext && integerInput.value.trim() !== '') {
+            index += 1;
+            addRow();
+          }
+        });
+
+        row.appendChild(integerInput);
+      } else {
+        const select = document.createElement('select');
+        select.className = 'form-control';
+        select.name = `${key}_${index}`;
+        select.id = `id_${key}_${index}`;
+        select.appendChild(createOption('', '-- Select --'));
+        options.forEach((value) => {
+          select.appendChild(createOption(value, value));
+        });
+        select.appendChild(createOption('other', 'Other'));
+
+        const customInput = document.createElement('input');
+        customInput.type = 'text';
+        customInput.name = `${key}_other_${index}`;
+        customInput.id = `id_${key}_other_${index}`;
+        customInput.className = 'form-control mt-2';
+        customInput.placeholder = 'Enter custom...';
+        customInput.style.display = 'none';
+
+        select.addEventListener('change', function () {
+          if (select.value === 'other') {
+            customInput.style.display = 'block';
+          } else {
+            customInput.style.display = 'none';
+          }
+
+          const hasNext = container.querySelector(`select[name="${key}_${currentIndex + 1}"]`);
+          if (!hasNext && select.value) {
+            index += 1;
+            addRow();
+          }
+        });
+
+        row.appendChild(select);
+        row.appendChild(customInput);
+      }
+
       container.appendChild(row);
     }
 
@@ -197,7 +221,7 @@
     const repeatable = document.createElement('div');
     const key = `${field.id}_${suffix}`;
     repeatable.id = `repeatable-${key}`;
-    createRepeatableField(repeatable, key, choices[field.id] || []);
+    createRepeatableField(repeatable, key, choices[field.id] || [], field.id);
 
     col.appendChild(labelWrap);
     col.appendChild(helpLink);
@@ -233,6 +257,13 @@
     while (true) {
       const select = form.querySelector(`[name="${key}_${i}"]`);
       if (!select) break;
+
+      if (select.tagName !== 'SELECT') {
+        const directValue = select.value.trim();
+        if (directValue) values.push(directValue);
+        i += 1;
+        continue;
+      }
 
       if (select.value === 'other') {
         const custom = form.querySelector(`[name="${key}_other_${i}"]`);
